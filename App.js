@@ -1,58 +1,70 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
+import React from "react";
+import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
 
-import React, { Component } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-type Props = {};
-export default class App extends Component<Props> {
+class App extends React.Component {
+  state = {
+    data: [
+      { id: "00", name: "Relâmpago McQueen" },
+      { id: "01", name: "Agente Tom Mate" },
+      { id: "02", name: "Doc Hudson" },
+      { id: "03", name: "Cruz Ramirez" }
+    ]
+  };
   render() {
+    const columns = 3;
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
-      </View>
+      <SafeAreaView>
+        <FlatList
+          data={createRows(this.state.data, columns)}
+          keyExtractor={item => item.id}
+          numColumns={columns}
+          renderItem={({ item }) => {
+            if (item.empty) {
+              return <View style={[styles.item, styles.itemEmpty]} />;
+            }
+            return (
+              <View style={styles.item}>
+                <Text style={styles.text}>{item.name}</Text>
+              </View>
+            );
+          }}
+        />
+      </SafeAreaView>
     );
   }
 }
 
+function createRows(data, columns) {
+  const rows = Math.floor(data.length / columns);
+  let lastRowElements = data.length - rows * columns;
+
+  while (lastRowElements !== columns) {
+    data.push({
+      id: `empty-${lastRowElements}`,
+      name: `empty-${lastRowElements}`,
+      empty: true
+    });
+    lastRowElements += 1;
+  }
+
+  return data;
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+  item: {
+    alignItems: "center",
+    backgroundColor: "#dcda48",
+    flexBasis: 0,
+    flexGrow: 1,
+    margin: 4,
+    padding: 20
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  itemEmpty: {
+    backgroundColor: "transparent"
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  text: {
+    color: "#333333"
+  }
 });
+
+export default App;
